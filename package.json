@@ -1,6 +1,6 @@
 {
   "name": "validador-fiscal-mx",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "description": "Validación completa de RFC, CURP, NSS y otros identificadores fiscales mexicanos",
   "main": "dist/index.js",
