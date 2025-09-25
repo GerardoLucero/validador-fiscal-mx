@@ -40,9 +40,9 @@ export function validarIdentificador(identificador) {
   let esValido = false;
   
   switch (tipo) {
-    case 'RFC': esValido = validarRFC(identificador); break;
-    case 'CURP': esValido = validarCURP(identificador); break;
-    case 'NSS': esValido = validarNSS(identificador); break;
+  case 'RFC': esValido = validarRFC(identificador); break;
+  case 'CURP': esValido = validarCURP(identificador); break;
+  case 'NSS': esValido = validarNSS(identificador); break;
   }
   
   return {
