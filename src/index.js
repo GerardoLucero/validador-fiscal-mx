@@ -23,7 +23,17 @@ export function validarCURP(curp) {
 export function validarNSS(nss) {
   if (!nss || typeof nss !== 'string') return false;
   const nssLimpio = nss.trim().replace(/[-\s]/g, '');
-  return NSS_REGEX.test(nssLimpio);
+  if (!NSS_REGEX.test(nssLimpio)) return false;
+
+  // Verificación del dígito verificador (algoritmo Luhn módulo 10, IMSS)
+  const digits = nssLimpio.split('').map(Number);
+  let sum = 0;
+  for (let i = 0; i < 10; i++) {
+    const val = i % 2 === 0 ? digits[i] * 2 : digits[i];
+    sum += val > 9 ? val - 9 : val;
+  }
+  const checkDigit = (10 - (sum % 10)) % 10;
+  return checkDigit === digits[10];
 }
 
 export function detectarTipo(identificador) {
@@ -31,7 +41,7 @@ export function detectarTipo(identificador) {
   const id = identificador.trim().toUpperCase();
   if (RFC_REGEX.test(id)) return 'RFC';
   if (CURP_REGEX.test(id)) return 'CURP';
-  if (NSS_REGEX.test(id.replace(/[-]/g, ''))) return 'NSS';
+  if (NSS_REGEX.test(id.replace(/[-\s]/g, ''))) return 'NSS';
   return 'DESCONOCIDO';
 }
 

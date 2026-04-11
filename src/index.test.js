@@ -46,23 +46,28 @@ describe('validador-fiscal-mx', () => {
   });
 
   describe('validarNSS', () => {
-    test('debe validar NSS válido', () => {
-      expect(validador.validarNSS('12345678901')).toBe(true);
-      expect(validador.validarNSS('98765432109')).toBe(true);
+    test('debe validar NSS válido (con checksum IMSS)', () => {
+      expect(validador.validarNSS('12345678907')).toBe(true);   // CD=7, calculado
+      expect(validador.validarNSS('87654321002')).toBe(true);   // CD=2, calculado
     });
 
-    test('debe rechazar NSS inválido', () => {
-      expect(validador.validarNSS('123456789')).toBe(false);
-      expect(validador.validarNSS('123456789012')).toBe(false);
+    test('debe rechazar NSS con formato inválido', () => {
+      expect(validador.validarNSS('123456789')).toBe(false);    // muy corto
+      expect(validador.validarNSS('123456789012')).toBe(false); // muy largo
       expect(validador.validarNSS('')).toBe(false);
       expect(validador.validarNSS(null)).toBe(false);
       expect(validador.validarNSS(undefined)).toBe(false);
       expect(validador.validarNSS(123)).toBe(false);
     });
 
-    test('debe manejar guiones en NSS', () => {
-      expect(validador.validarNSS('12-34-56-78901')).toBe(true);
-      expect(validador.validarNSS('12 34 56 78901')).toBe(true);
+    test('debe rechazar NSS con dígito verificador incorrecto', () => {
+      expect(validador.validarNSS('12345678901')).toBe(false);  // CD correcto es 7, no 1
+      expect(validador.validarNSS('00000000001')).toBe(false);  // CD correcto es 0
+    });
+
+    test('debe manejar guiones y espacios en NSS', () => {
+      expect(validador.validarNSS('12-34-56-78907')).toBe(true);
+      expect(validador.validarNSS('12 34 56 78907')).toBe(true);
     });
   });
 
@@ -70,8 +75,8 @@ describe('validador-fiscal-mx', () => {
     test('debe detectar tipos correctamente', () => {
       expect(validador.detectarTipo('PEGJ850115AB1')).toBe('RFC');
       expect(validador.detectarTipo('PEGJ850115HJCRRL09')).toBe('CURP');
-      expect(validador.detectarTipo('12345678901')).toBe('NSS');
-      expect(validador.detectarTipo('12-34-56-78901')).toBe('NSS');
+      expect(validador.detectarTipo('12345678907')).toBe('NSS');
+      expect(validador.detectarTipo('12-34-56-78907')).toBe('NSS');
       expect(validador.detectarTipo('INVALID')).toBe('DESCONOCIDO');
     });
 
@@ -102,10 +107,10 @@ describe('validador-fiscal-mx', () => {
     });
 
     test('debe validar y clasificar NSS', () => {
-      const resultado = validador.validarIdentificador('12345678901');
+      const resultado = validador.validarIdentificador('12345678907');
       expect(resultado.tipo).toBe('NSS');
       expect(resultado.esValido).toBe(true);
-      expect(resultado.identificador).toBe('12345678901');
+      expect(resultado.identificador).toBe('12345678907');
     });
 
     test('debe manejar identificador inválido', () => {
